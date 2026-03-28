@@ -23,6 +23,7 @@ async function search(query) {
       console.log(`${chalk.white(i + 1)}. ${chalk.green(skill.repo_name)}`);
       console.log(`   ${skill.description || 'No description'}`);
       console.log(`   ${chalk.yellow('⭐')} ${skill.stars}  ${chalk.gray('|')}  ${chalk.blue(skill.category)}`);
+      console.log(`   ${chalk.gray('🔗')} https://www.6erskills.com/skill/${skill.slug}`);
       console.log();
     });
   } catch (err) {
