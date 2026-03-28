@@ -1,17 +1,21 @@
 # 6erplugin CLI
 
-6er Agent Skills Hub 命令行工具 - 在终端中搜索和安装 AI 技能
+6er Agent Skills Hub 命令行工具 - 在终端中搜索 AI 技能
 
 ## 安装
 
 ```bash
-npm install -g 6erplugin
-```
+# 方式1: 直接运行 (推荐)
+npx scar119/6erplugin search "关键词"
 
-或直接运行：
+# 方式2: 克隆到本地长期使用
+git clone https://github.com/scar119/6erplugin.git
+cd 6erplugin
+npm install -g ./
 
-```bash
-npx 6erplugin search "代码审查"
+# 方式3: 添加别名
+echo 'alias 6erplugin="npx scar119/6erplugin"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 ## 使用
