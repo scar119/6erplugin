@@ -1,0 +1,26 @@
+{
+  "name": "6erplugin",
+  "version": "1.0.0",
+  "description": "6er Agent Skills Hub CLI - Search and install AI skills directly from terminal",
+  "bin": {
+    "6erplugin": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "skills",
+    "mcp",
+    "claude",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0"
+  }
+}
