@@ -5,29 +5,33 @@ const axios = require('axios');
 const chalk = require('chalk');
 
 const API_BASE = 'https://www.6erskills.com/api';
+async function search(query, options = {}) {
+  const pageSize = options.pageSize || 10;
+  const page = options.page || 1;
 
-// 搜索 skills
-async function search(query) {
   try {
+    console.log(chalk.cyan(`🔍 搜索: "${query}"...`));
+    console.log(chalk.gray('-'.repeat(20)));
+
     const res = await axios.get(`${API_BASE}/skills`, {
-      params: { search: query, page_size: 10 }
+      params: { search: query, page_size: pageSize, page }
     });
 
     if (res.data.items.length === 0) {
-      console.log(chalk.yellow('No skills found.'));
+      console.log(chalk.yellow('没有找到相关技能.\n'));
       return;
     }
 
-    console.log(chalk.cyan(`\nFound ${res.data.total} skills:\n`));
+    console.log(chalk.cyan(`\n找到 ${res.data.total} 个技能:\n`));
     res.data.items.forEach((skill, i) => {
-      console.log(`${chalk.white(i + 1)}. ${chalk.green(skill.repo_name)}`);
-      console.log(`   ${skill.description || 'No description'}`);
+      console.log(`${chalk.white(i + 1 + (page - 1) * pageSize)}. ${chalk.green(skill.repo_name)}`);
+      console.log(`   ${skill.description || '暂无描述'}`);
       console.log(`   ${chalk.yellow('⭐')} ${skill.stars}  ${chalk.gray('|')}  ${chalk.blue(skill.category)}`);
       console.log(`   ${chalk.gray('🔗')} https://www.6erskills.com/skill/${skill.slug}`);
       console.log();
     });
   } catch (err) {
-    console.log(chalk.red('Search failed:'), err.message);
+    console.log(chalk.red('搜索失败:'), err.message);
   }
 }
 
@@ -86,16 +90,57 @@ if (!cmd || cmd === 'help') {
   process.exit(0);
 }
 
+// 解析 search 命令的参数
+function parseSearchArgs(searchArgs) {
+  const options = { pageSize: 10, page: 1 };
+
+  for (let i = 0; i < searchArgs.length; i++) {
+    const arg = searchArgs[i];
+    if (arg === '-n' && searchArgs[i + 1]) {
+      options.pageSize = parseInt(searchArgs[i + 1]) || 10;
+      searchArgs.splice(i, 2);
+      i -= 2;
+    } else if (arg === '--page' && searchArgs[i + 1]) {
+      options.page = parseInt(searchArgs[i + 1]) || 1;
+      searchArgs.splice(i, 2);
+      i -= 2;
+    }
+  }
+
+  return { query: searchArgs.join(' '), options };
+}
+
+// install 安装技能
+async function install(skillUrl) {
+  if (!skillUrl) {
+    console.log(chalk.red('请指定技能地址:'));
+    console.log('  6erplugin install <owner/repo>');
+    console.log('  6erplugin install https://github.com/owner/repo\n');
+    return;
+  }
+
+  console.log(chalk.cyan(`\n📦 正在安装: ${skillUrl}\n`));
+  console.log(chalk.yellow('提示: 使用 Claude Code 的 skill-manager 安装技能'));
+  console.log(`${chalk.blue('https://www.6erskills.com/skill/<slug>')}\n`);
+}
+
 if (cmd === 'search' && args[1]) {
-  search(args.slice(1).join(' '));
+  const searchArgs = args.slice(1);
+  const { query, options } = parseSearchArgs(searchArgs);
+  if (query) search(query, options);
 } else if (cmd === 'view' && args[1]) {
   view(args[1]);
 } else if (cmd === 'list') {
   list();
+} else if (cmd === 'install' && args[1]) {
+  install(args.slice(1).join(' '));
+} else if (cmd === 'install' && !args[1]) {
+  install();
 } else {
-  console.log(chalk.red('Unknown command. Use:'));
+  console.log(chalk.red('未知命令. 使用:'));
   console.log('  6erplugin search <query>');
   console.log('  6erplugin view <name>');
   console.log('  6erplugin list');
+  console.log('  6erplugin install <owner/repo>');
   console.log('  6erplugin help');
 }
